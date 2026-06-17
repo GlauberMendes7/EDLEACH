@@ -99,3 +99,25 @@ with col_resultados:
     fig.add_vrect(
         x0=th_min, x1=th_max,
         fillcolor="rgba(46, 204, 113, 0.3)", # Verde translúcido
+        layer="below", line_width=2, line_color="rgba(46, 204, 113, 1)",
+        annotation_text="Janela de Silêncio (Hibernação)", annotation_position="top left"
+    )
+
+    # Linhas Críticas absolutas para referência
+    fig.add_vline(x=60, line_dash="dash", line_color="red", annotation_text="Morte por Seca (60%)")
+    fig.add_vline(x=80, line_dash="dash", line_color="red", annotation_text="Morte por Encharcamento (80%)")
+
+    # Configuração do Eixo X para manter o gráfico estático e ver a barra encolher/esticar
+    fig.update_xaxes(range=[50, 90], title_text="Umidade do Solo (%)")
+    fig.update_yaxes(showticklabels=False, range=[0, 1]) # Oculta o eixo Y
+    
+    fig.update_layout(
+        height=250,
+        margin=dict(l=20, r=20, t=30, b=20),
+        title_text="Comportamento Elástico do Gatilho de Transmissão",
+        plot_bgcolor="rgba(240, 240, 240, 0.5)"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+    
+    st.caption("Nota: O rigor do sensoriamento e a barreira de sobrevivência refletem estritamente a energia física lida pelo sensor, eliminando inconsistências na aferição do código durante a execução das rotinas do dispositivo.")
