@@ -88,7 +88,7 @@ with col_resultados:
     
     st.subheader("2. Limiares de Evento")
     s1, s2, s3 = st.columns(3)
-    s1.metric("Fase Energética Física", fase)
+    s1.metric("Fase Energética", fase)
     s2.metric("Fator Lambda (λ)", f"{lam:.3f}")
     s3.metric("Janela de Silêncio", f"[{th_min:.2f}% a {th_max:.2f}%]")
 
@@ -100,7 +100,7 @@ with col_resultados:
         x0=th_min, x1=th_max,
         fillcolor="rgba(46, 204, 113, 0.3)", # Verde translúcido
         layer="below", line_width=2, line_color="rgba(46, 204, 113, 1)",
-        annotation_text="Janela de Silêncio (Hibernação)", annotation_position="top left"
+        annotation_text="Janela de Silêncio", annotation_position="top left"
     )
 
     # Linhas Críticas absolutas para referência
