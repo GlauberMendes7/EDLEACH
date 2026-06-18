@@ -85,8 +85,8 @@ with col_cond1:
         help="Energia residual atual do nó, expressa como percentagem de E_max."
     )
 with col_cond2:
-    e_harv_medio = st.slider(
-        "Média de Colheita das últimas K rodadas — Ē_harv (%)",
+    e_col_medio = st.slider(
+        "Média de Colheita das últimas K rodadas — Ē_col (%)",
         min_value=0.0, max_value=30.0, value=5.0, step=0.1,
         help="Média móvel da energia colhida nas últimas K rodadas (Equação 1)."
     )
@@ -114,7 +114,7 @@ TH_NORMAL  = (th_normal_inf,  th_normal_sup)
 # --- DIMENSÃO 1: Seleção de CH ---
 
 # Equação 2: Energia residual projetada
-e_proj = max(0.0, min(100.0, e_res + e_harv_medio - e_ref))
+e_proj = max(0.0, min(100.0, e_res + e_col_medio - e_ref))
 
 # Equação 3: Probabilidade de eleição de CH
 if e_res < theta_critico:
@@ -195,20 +195,20 @@ r1.metric(
     help="E_res(t): energia disponível no presente."
 )
 r2.metric(
-    "Energia Projetada — Ê_res(t+1)",
+    "Energia Projetada — E_proj(t+1)",
     f"{e_proj:.1f}%",
-    delta=f"{e_harv_medio - e_ref:+.1f}% tendência",
-    help="Equação 2: min(E_res + Ē_harv - E_ref, E_max)."
+    delta=f"{e_col_medio - e_ref:+.1f}% tendência",
+    help="Equação 2: min(E_res + Ē_col - E_ref, E_max)."
 )
 r3.metric(
-    "Ê_res Normalizada",
+    "E_proj Normalizada",
     f"{e_proj_norm:.3f}",
-    help="Ê_res(t+1) / E_max — fator que pondera P(n,t)."
+    help="E_proj(t+1) / E_max — fator que pondera P(n,t)."
 )
 r4.metric(
     "Chance de ser CH nesta rodada",
     f"{p_ch:.2f}%",
-    help=f"P(n,t) = p × Ê_res(t+1) / E_max = {p_base:.1f}% × {e_proj_norm:.3f} = {p_ch:.2f}%"
+    help=f"P(n,t) = p × E_proj(t+1) / E_max = {p_base:.1f}% × {e_proj_norm:.3f} = {p_ch:.2f}%"
 )
 
 if apto_ch:
@@ -220,7 +220,7 @@ else:
 e_vals = [i / 10.0 for i in range(0, 1001)]
 p_vals = []
 for e in e_vals:
-    e_p = max(0.0, min(100.0, e + e_harv_medio - e_ref))
+    e_p = max(0.0, min(100.0, e + e_col_medio - e_ref))
     if e < theta_critico:
         p_vals.append(0.0)
     else:
@@ -256,7 +256,7 @@ fig_ch.add_trace(go.Scatter(
     x=e_vals, y=p_vals,
     mode="lines",
     line=dict(color="rgba(46, 134, 193, 1)", width=2),
-    name="P(n,t) = p × Ê_res / E_max"
+    name="P(n,t) = p × E_proj / E_max"
 ))
 
 # Marcador do nó atual
@@ -381,9 +381,9 @@ st.subheader("3. Resumo das Equações Aplicadas")
 st.markdown(f"""
 | Equação | Expressão | Valor calculado |
 |---|---|---|
-| Eq. 1 — Média móvel colheita | Ē_harv(t) | **{e_harv_medio:.2f}%** |
-| Eq. 2 — Energia projetada | Ê_res(t+1) = min(E_res + Ē_harv - E_ref, E_max) | **{e_proj:.2f}%** |
-| Eq. 3 — Chance de ser CH | P(n,t) = p × Ê_res(t+1) / E_max | **{p_ch:.2f}%** |
+| Eq. 1 — Média móvel colheita | Ē_col(t) | **{e_col_medio:.2f}%** |
+| Eq. 2 — Energia projetada | E_proj(t+1) = min(E_res + Ē_col - E_ref, E_max) | **{e_proj:.2f}%** |
+| Eq. 3 — Chance de ser CH | P(n,t) = p × E_proj(t+1) / E_max | **{p_ch:.2f}%** |
 | Eq. 4 — Fator de posição | λ(t) = (E_res - f_min) / (f_max - f_min) | **{lam:.3f}** |
 | Eq. 5a — Limiar inferior efetivo | θ_inf = θ_inf_f + λ × (θ_inf_f+1 - θ_inf_f) | **{f"{th_inf_efetivo:.2f}" if th_inf_efetivo is not None else "Irrestrito"}** |
 | Eq. 5b — Limiar superior efetivo | θ_sup = θ_sup_f - λ × (θ_sup_f - θ_sup_f+1) | **{f"{th_sup_efetivo:.2f}" if th_sup_efetivo is not None else "Irrestrito"}** |
